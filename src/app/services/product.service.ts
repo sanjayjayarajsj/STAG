@@ -62,7 +62,7 @@ export class ProductService {
       id: 'stag-strawberry',
       flavor: 'Strawberry',
       accent: '#f43f5e',
-      ingredientImage: '/assets/ingredients/strawberry.webp',
+      ingredientImage: '/assets/ingredients/Strawberry_with_water_droplets_c902f16d_2K.jpg',
       ingredients: [
         { name: 'Alpine Strawberry', detail: 'Cold-pressed at peak ripeness' },
         { name: 'Micro-Nitro Foam', detail: 'A velvet draught head' },
@@ -92,7 +92,7 @@ export class ProductService {
       id: 'stag-lime',
       flavor: 'Lime',
       accent: '#84cc16',
-      ingredientImage: '/assets/ingredients/lime.webp',
+      ingredientImage: '/assets/ingredients/Fresh_lime_in_studio_04743b92.jpg',
       ingredients: [
         { name: 'Tahitian Lime', detail: 'Hand-harvested zest' },
         { name: 'Japanese Yuzu', detail: 'Aromatic citrus lift' },
@@ -122,7 +122,7 @@ export class ProductService {
       id: 'stag-blueberry',
       flavor: 'Blueberry',
       accent: '#818cf8',
-      ingredientImage: '/assets/ingredients/blueberry.webp',
+      ingredientImage: '/assets/ingredients/Fresh_blueberries_with_water_droplets_9aab2cf7.jpg',
       ingredients: [
         { name: 'Wild Bilberry', detail: 'Deep, indigo richness' },
         { name: 'Mountain Lavender', detail: 'Hand-rubbed blossoms' },
@@ -152,7 +152,7 @@ export class ProductService {
       id: 'stag-black-coffee',
       flavor: 'Black Coffee',
       accent: '#f59e0b',
-      ingredientImage: '/assets/ingredients/coffee.webp',
+      ingredientImage: '/assets/ingredients/Roasted_coffee_beans_c44dc16b.jpg',
       ingredients: [
         { name: 'Single-Origin Arabica', detail: 'Cold-distilled for 24 hours' },
         { name: 'Madagascar Vanilla', detail: 'Warm, roasted notes' },
@@ -180,7 +180,7 @@ export class ProductService {
       id: 'stag-original',
       flavor: 'Original',
       accent: '#38bdf8',
-      ingredientImage: '/assets/ingredients/ice.webp',
+      ingredientImage: '/assets/ingredients/Ice_cubes_with_water_droplets_95a35fc4.jpg',
       ingredients: [
         { name: 'Basalt Spring Water', detail: 'Filtered through volcanic strata' },
         { name: 'Natural Magnesium', detail: 'Mineral roundness' },

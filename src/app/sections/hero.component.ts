@@ -5,9 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollService } from '../services/scroll.service';
 
 const FRAME_COUNT = 190;
-type FrameSet = 'desktop' | 'mobile';
-/** desktop = 1920x1080 frames; mobile = centre 3:4 slice of the same frames (phones only need that slice). */
-const frameUrl = (set: FrameSet, i: number) => `/assets/scroll/${set}/frame_${String(i).padStart(6, '0')}.webp`;
+const frameUrl = (i: number) => `/assets/scroll/flow/f_${String(i).padStart(3, '0')}.webp`;
 
 @Component({
   selector: 'app-hero',
@@ -17,9 +15,8 @@ const frameUrl = (set: FrameSet, i: number) => `/assets/scroll/${set}/frame_${St
       <div #stage class="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink">
         <!-- Instant first paint: real <img> in the HTML, the canvas takes over once frames stream in -->
         <picture>
-          <source media="(max-aspect-ratio: 4/5)" srcset="/assets/scroll/mobile/frame_000000.webp" />
           <img
-            src="/assets/scroll/desktop/frame_000000.webp"
+            src="/assets/scroll/flow/f_001.webp"
             alt=""
             aria-hidden="true"
             width="1920"
@@ -112,14 +109,15 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   readonly loadPct = signal(0);
 
   private ctx: CanvasRenderingContext2D | null = null;
-  private images: HTMLImageElement[] = [];
-  private loaded: boolean[] = [];
-  private indices: number[] = []; // which source frames this device loads
-  private set: FrameSet = 'desktop';
-  private current = 0; // index into `indices` that the scroll position wants
+  private frames: (HTMLImageElement | null)[] = new Array(FRAME_COUNT).fill(null);
+  private loadedCount = 0;
+  private current = 0;
+  private target = 0;
   private lastDrawn = -1;
   private cw = 0;
   private ch = 0;
+  private smoothing = 0.14;
+  private loopRaf = 0;
   private resizeObserver: ResizeObserver | null = null;
   private resizeRaf = 0;
   private timeline: gsap.core.Timeline | null = null;
@@ -132,11 +130,8 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
 
   private init(): void {
     const reduced = this.scroll.isReducedMotion();
+    this.smoothing = reduced ? 1 : 0.14;
     this.ctx = this.canvas.nativeElement.getContext('2d', { alpha: false });
-    const stage = this.stage.nativeElement;
-    // Portrait screens get the cropped set; everything else gets full 1080p frames
-    this.set = stage.clientWidth / Math.max(1, stage.clientHeight) < 0.8 ? 'mobile' : 'desktop';
-    this.indices = this.buildIndices(reduced);
 
     this.resize();
     this.resizeObserver = new ResizeObserver(() => {
@@ -150,106 +145,113 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
     } else {
       this.setupScroll();
     }
-    this.loadFrames();
+
+    this.preload();
+    this.loop();
   }
 
-  /** Optimize frame loading for silky smooth performance and low memory */
-  private buildIndices(reduced: boolean): number[] {
-    const lastFrame = this.set === 'mobile' ? FRAME_COUNT - 2 : FRAME_COUNT - 1;
-    if (reduced) return [lastFrame];
-    const nav = navigator as Navigator & { connection?: { saveData?: boolean } };
-    const saveData = nav.connection?.saveData === true;
-    const step = this.set === 'mobile' ? (saveData ? 4 : 3) : saveData ? 3 : 2;
-    const out: number[] = [];
-    for (let i = 0; i <= lastFrame; i += step) out.push(i);
-    if (out[out.length - 1] !== lastFrame) out.push(lastFrame);
-    return out;
+  /** Preload every frame with batch parallel streaming like index.html */
+  private async preload(): Promise<void> {
+    // First frame loaded immediately for instant paint
+    await this.loadFrame(0);
+    this.draw(0, true);
+
+    const rest: number[] = [];
+    for (let i = 1; i < FRAME_COUNT; i++) rest.push(i);
+
+    const BATCH = 12;
+    for (let i = 0; i < rest.length; i += BATCH) {
+      if (this.destroyed) return;
+      await Promise.all(rest.slice(i, i + BATCH).map(idx => this.loadFrame(idx)));
+    }
   }
 
-  /** Streams frames in scroll order with a small parallel pool. Never blocks the page. */
-  private loadFrames(): void {
-    const total = this.indices.length;
-    const maxParallel = 6;
-    let next = 0;
-    let inflight = 0;
-    let done = 0;
-
-    const pump = (): void => {
-      while (!this.destroyed && inflight < maxParallel && next < total) {
-        const k = next++;
-        inflight++;
-        const img = new Image();
-        img.decoding = 'async';
-        this.images[k] = img;
-
-        const finish = (ok: boolean): void => {
-          inflight--;
-          done++;
-          if (ok) {
-            this.loaded[k] = true;
-            if (k === this.current || this.lastDrawn < 0) this.render(this.current);
-          }
-          const pct = Math.round((done / total) * 100);
-          if (pct === 100 || pct - this.loadPct() >= 10) this.zone.run(() => this.loadPct.set(pct));
-          pump();
-        };
-        img.onload = () => finish(true);
-        img.onerror = () => finish(false);
-        img.src = frameUrl(this.set, this.indices[k]);
+  private loadFrame(index: number): Promise<void> {
+    return new Promise(resolve => {
+      if (this.destroyed) {
+        resolve();
+        return;
       }
-    };
-    pump();
+      const img = new Image();
+      img.src = frameUrl(index + 1);
+      const done = () => {
+        this.frames[index] = img;
+        this.loadedCount++;
+        const p = Math.round((this.loadedCount / FRAME_COUNT) * 100);
+        if (p === 100 || p - this.loadPct() >= 5) {
+          this.zone.run(() => this.loadPct.set(p));
+        }
+        resolve();
+      };
+      if (img.decode) {
+        img.decode().then(done, done);
+      } else {
+        img.onload = done;
+        img.onerror = done;
+      }
+    });
   }
 
+  /** Canvas sizing with HiDPI and CSS pixel coordinate mapping */
   private resize(): void {
     if (!this.ctx) return;
     const el = this.stage.nativeElement;
-    // Frames are 1080p, so up to 2x DPR is real detail; beyond that is wasted work
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let w = Math.round(el.clientWidth * dpr);
-    let h = Math.round(el.clientHeight * dpr);
-    const k = Math.min(1, 2560 / Math.max(w, h));
-    w = Math.round(w * k);
-    h = Math.round(h * k);
-    if (!w || !h || (w === this.cw && h === this.ch)) return;
+    this.cw = el.clientWidth;
+    this.ch = el.clientHeight;
+    if (!this.cw || !this.ch) return;
 
-    this.cw = w;
-    this.ch = h;
     const canvas = this.canvas.nativeElement;
-    canvas.width = w;
-    canvas.height = h;
+    canvas.width = Math.round(this.cw * dpr);
+    canvas.height = Math.round(this.ch * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.ctx.imageSmoothingEnabled = true;
-    this.ctx.imageSmoothingQuality = 'medium';
+    this.ctx.imageSmoothingQuality = 'high';
     this.lastDrawn = -1;
-    this.render(this.current);
+    this.draw(Math.round(this.current), true);
   }
 
-  /** Draws the newest loaded frame at or before `target` (falls forward if none yet). */
-  private render(target: number): void {
-    if (!this.ctx || !this.cw) return;
-    const last = this.indices.length - 1;
-    let k = Math.min(Math.max(target, 0), last);
-    while (k >= 0 && !this.loaded[k]) k--;
+  /** Responsive draw from index.html: cover landscape, fit width on portrait so can is never cut off */
+  private draw(index: number, force = false): void {
+    if (!this.ctx || !this.cw || !this.ch) return;
+    const last = FRAME_COUNT - 1;
+    let k = Math.min(Math.max(index, 0), last);
+
+    // Fall back to nearest loaded frame if current frame is still streaming
+    while (k >= 0 && !this.frames[k]) k--;
     if (k < 0) {
-      k = target;
-      while (k <= last && !this.loaded[k]) k++;
+      k = index;
+      while (k <= last && !this.frames[k]) k++;
       if (k > last) return;
     }
-    if (k === this.lastDrawn) return;
+    if (k === this.lastDrawn && !force) return;
 
-    const img = this.images[k];
-    const iw = img.naturalWidth || (this.set === 'mobile' ? 810 : 1920);
-    const ih = img.naturalHeight || 1080;
-    // "cover" crop computed in source pixels so only the visible region is drawn
-    const s = Math.max(this.cw / iw, this.ch / ih);
-    const sw = this.cw / s;
-    const sh = this.ch / s;
-    this.ctx.drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, 0, 0, this.cw, this.ch);
+    const img = this.frames[k];
+    if (!img) return;
     this.lastDrawn = k;
+
+    const iw = img.naturalWidth || 1920;
+    const ih = img.naturalHeight || 1080;
+    const scale = this.cw / this.ch >= iw / ih ? this.cw / iw : (this.cw < 700 ? this.cw / iw : this.ch / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+
+    this.ctx.fillStyle = '#09090b';
+    this.ctx.fillRect(0, 0, this.cw, this.ch);
+    this.ctx.drawImage(img, (this.cw - dw) / 2, (this.ch - dh) / 2, dw, dh);
   }
 
+  /** Continuous LERP animation loop: smoothly interpolates current frame toward target */
+  private loop = (): void => {
+    if (this.destroyed) return;
+    this.current += (this.target - this.current) * this.smoothing;
+    if (Math.abs(this.target - this.current) < 0.01) this.current = this.target;
+    this.draw(Math.round(this.current));
+    this.loopRaf = requestAnimationFrame(this.loop);
+  };
+
   private setupScroll(): void {
-    const last = this.indices.length - 1;
+    const last = FRAME_COUNT - 1;
     const state = { frame: 0 };
     const p1 = this.phase1.nativeElement;
     const p2 = this.phase2.nativeElement;
@@ -276,11 +278,7 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
         frame: last,
         duration: 1,
         onUpdate: () => {
-          const k = Math.round(state.frame);
-          if (k !== this.current) {
-            this.current = k;
-            this.render(k);
-          }
+          this.target = state.frame;
         }
       },
       0
@@ -301,6 +299,8 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
     gsap.set(this.phase1.nativeElement, { autoAlpha: 0 });
     gsap.set(this.phase3.nativeElement, { autoAlpha: 1 });
     gsap.set(this.cue.nativeElement, { autoAlpha: 0 });
+    this.target = FRAME_COUNT - 1;
+    this.current = FRAME_COUNT - 1;
   }
 
   go(target: string): void {
@@ -310,14 +310,17 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroyed = true;
     if (!this.isBrowser) return;
+    cancelAnimationFrame(this.loopRaf);
     cancelAnimationFrame(this.resizeRaf);
     this.resizeObserver?.disconnect();
     this.timeline?.scrollTrigger?.kill(true);
     this.timeline?.kill();
-    this.images.forEach(img => {
-      img.onload = null;
-      img.onerror = null;
+    this.frames.forEach(img => {
+      if (img) {
+        img.onload = null;
+        img.onerror = null;
+      }
     });
-    this.images = [];
+    this.frames = [];
   }
 }

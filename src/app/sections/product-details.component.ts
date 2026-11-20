@@ -8,7 +8,7 @@ import { RevealDirective } from '../shared/reveal.directive';
 interface DetailExtras {
   number: string;
   glow: string;
-  cutout: { src: string; w: number; h: number };
+  cutout: { src: string; w: number; h: number; scaleClass?: string };
   backdrop: string;
   description: string;
   specs: { label: string; value: string }[];
@@ -65,6 +65,46 @@ const EXTRAS: Record<string, DetailExtras> = {
       { label: 'Mineral Finish', value: 'Maldon Sea Salt' }
     ],
     notes: ['Tahitian Lime Zest', 'Japanese Yuzu', 'Maldon Flake Salt', 'Electric Effervescence']
+  },
+  'stag-strawberry': {
+    number: '04',
+    glow: '#f43f5e',
+    cutout: {
+      src: '/assets/details/strawberry-can.png',
+      w: 1412,
+      h: 1204,
+      scaleClass: 'scale-[1.25] sm:scale-[1.3] lg:scale-[1.38]'
+    },
+    backdrop: '/assets/details/strawberry-bg.jpg',
+    description:
+      'Sourced from ripe high-altitude strawberries, cold-distilled and infused with micro-nitro for a velvet draught foam. Real wild berry notes paired with delicate natural sweetness.',
+    specs: [
+      { label: 'Harvest', value: 'Alpine Strawberry' },
+      { label: 'Carbonation', value: 'Micro-Nitro Velvet' },
+      { label: 'Calories', value: '15 kcal' },
+      { label: 'Base', value: 'Basalt Spring Water' }
+    ],
+    notes: ['Mountain Strawberry', 'Micro-Nitro Foam', 'Cold-Steeped Agave', 'Basalt Spring Water']
+  },
+  'stag-blueberry': {
+    number: '05',
+    glow: '#818cf8',
+    cutout: {
+      src: '/assets/details/blueberry-can.png',
+      w: 1404,
+      h: 1186,
+      scaleClass: 'scale-[1.25] sm:scale-[1.3] lg:scale-[1.38]'
+    },
+    backdrop: '/assets/details/blueberry-bg.jpg',
+    description:
+      'Deep indigo richness steeped with wild bilberries and hand-rubbed organic lavender blossoms. An intoxicating floral bouquet followed by a crisp, cleansing mineral spine.',
+    specs: [
+      { label: 'Harvest', value: 'Wild Bilberry' },
+      { label: 'Carbonation', value: 'Medium Champagne' },
+      { label: 'Calories', value: '12 kcal' },
+      { label: 'Flora', value: 'Mountain Lavender' }
+    ],
+    notes: ['Wild Bilberry', 'French Mountain Lavender', 'Juniper Berry', 'Raw Organic Nectar']
   }
 };
 
@@ -160,16 +200,18 @@ const AUTOPLAY_MS = 7000;
                     [class]="canClass(i)"
                     [style.transition-delay.ms]="on(i) ? 200 : 0"
                   >
-                    <img
-                      [src]="item.cutout.src"
-                      [alt]="item.product.name + ' can'"
-                      [attr.width]="item.cutout.w"
-                      [attr.height]="item.cutout.h"
-                      [style.aspect-ratio]="item.cutout.w + ' / ' + item.cutout.h"
-                      loading="lazy"
-                      decoding="async"
-                      class="relative h-[40svh] w-auto max-w-full object-contain motion-safe:animate-float lg:h-[62vh]"
-                    />
+                    <div class="motion-safe:animate-float flex items-center justify-center origin-center" [class]="item.cutout.scaleClass || ''">
+                      <img
+                        [src]="item.cutout.src"
+                        [alt]="item.product.name + ' can'"
+                        [attr.width]="item.cutout.w"
+                        [attr.height]="item.cutout.h"
+                        [style.aspect-ratio]="item.cutout.w + ' / ' + item.cutout.h"
+                        loading="lazy"
+                        decoding="async"
+                        class="relative h-[42svh] w-auto max-w-full object-contain lg:h-[64vh]"
+                      />
+                    </div>
                   </div>
                 </div>
 
