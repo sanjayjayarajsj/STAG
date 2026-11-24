@@ -39,7 +39,12 @@ const EXTRAS: Record<string, DetailExtras> = {
   'stag-black-coffee': {
     number: '02',
     glow: '#d97706',
-    cutout: { src: '/assets/details/black-coffee-can.webp', w: 586, h: 618 },
+    cutout: {
+      src: '/assets/details/black-coffee-can.webp',
+      w: 1180,
+      h: 1220,
+      scaleClass: 'scale-[1.4] sm:scale-[1.48] lg:scale-[1.58]'
+    },
     backdrop: '/assets/details/black-coffee-bg.webp',
     description:
       'Single-origin high-altitude Arabica cold-distilled over 24 hours. Intricate dark cacao aroma and roasted vanilla notes elevated with champagne-grade fine effervescence.',
@@ -132,21 +137,29 @@ const AUTOPLAY_MS = 7000;
           <span class="eyebrow mb-3 block">Sensory Profiles &bull; Cold Distilled</span>
           <h2 class="h-section">Product details</h2>
         </div>
-        <div class="-mx-5 overflow-x-auto px-5 no-scrollbar sm:mx-0 sm:px-0" role="tablist" aria-label="Choose edition">
-          <div class="flex w-max gap-1.5 rounded-full border border-white/10 bg-card/80 p-1.5">
-            @for (item of items(); track item.product.id; let i = $index) {
-              <button
-                type="button"
-                role="tab"
-                (click)="manual(0, i)"
-                [attr.aria-selected]="active() === i"
-                class="rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors duration-500"
-                [class]="active() === i ? 'bg-white text-ink' : 'text-neutral-400 hover:text-white'"
-              >
-                {{ item.number }} &mdash; {{ short(item.product.name) }}
-              </button>
-            }
+        <div class="flex flex-col gap-2 sm:items-end">
+          <div class="-mx-5 overflow-x-auto px-5 no-scrollbar sm:mx-0 sm:px-0" role="tablist" aria-label="Choose edition">
+            <div class="flex w-max gap-1.5 rounded-full border border-white/10 bg-card/80 p-1.5">
+              @for (item of items(); track item.product.id; let i = $index) {
+                <button
+                  type="button"
+                  role="tab"
+                  (click)="manual(0, i)"
+                  [attr.aria-selected]="active() === i"
+                  class="rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors duration-500"
+                  [class]="active() === i ? 'bg-white text-ink' : 'text-neutral-400 hover:text-white'"
+                >
+                  {{ item.number }} &mdash; {{ short(item.product.name) }}
+                </button>
+              }
+            </div>
           </div>
+          <span class="inline-flex items-center gap-1.5 px-1 text-[11px] font-medium uppercase tracking-widest text-neutral-400">
+            <svg class="h-3 w-3 animate-pulse text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16l-4-4m0 0l4-4m-4 4h18m-4 4l4-4m0 0l-4-4"/>
+            </svg>
+            Swipe to switch flavour
+          </span>
         </div>
       </div>
 
@@ -189,7 +202,7 @@ const AUTOPLAY_MS = 7000;
 
               <div class="container-x relative z-10 grid items-center gap-8 py-14 sm:py-16 lg:grid-cols-12 lg:gap-14 lg:py-20">
                 <!-- Can -->
-                <div class="relative flex items-center justify-center lg:col-span-6">
+                <div class="relative flex flex-col items-center justify-center lg:col-span-6">
                   <div
                     class="pointer-events-none absolute h-72 w-72 transition-[transform,opacity] duration-[1400ms] ease-out lg:h-[28rem] lg:w-[28rem]"
                     [class]="on(i) ? 'scale-100 opacity-70' : 'scale-50 opacity-0'"
@@ -212,6 +225,12 @@ const AUTOPLAY_MS = 7000;
                         class="relative h-[42svh] w-auto max-w-full object-contain lg:h-[64vh]"
                       />
                     </div>
+                  </div>
+                  <!-- Mobile swipe hint pill -->
+                  <div class="mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1 text-[11px] font-medium uppercase tracking-widest text-neutral-400 backdrop-blur-sm sm:hidden" aria-hidden="true">
+                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    <span>Swipe</span>
+                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                   </div>
                 </div>
 
@@ -293,6 +312,9 @@ const AUTOPLAY_MS = 7000;
           <div class="h-[2px] w-24 overflow-hidden rounded-full bg-neutral-800 sm:w-32" aria-hidden="true">
             <div class="h-full origin-left rounded-full bg-white transition-transform duration-700 ease-out" [style.transform]="'scaleX(' + progress() + ')'"></div>
           </div>
+          <span class="hidden items-center gap-1.5 text-[11px] font-medium uppercase tracking-widest text-neutral-400 sm:inline-flex">
+            &bull; Swipe or use arrows
+          </span>
         </div>
         <div class="flex items-center gap-3">
           <button type="button" (click)="manual(-1)" class="icon-btn" aria-label="Previous edition">

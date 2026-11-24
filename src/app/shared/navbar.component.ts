@@ -140,7 +140,11 @@ export class NavbarComponent implements AfterViewInit, OnDestroy {
   readonly scrolled = signal(false);
   readonly menuOpen = signal(false);
   readonly active = signal('');
-  readonly solid = () => this.scrolled() || this.menuOpen();
+  readonly solid = () =>
+    (this.scroll.isReducedMotion()
+      ? this.scrolled()
+      : this.scroll.heroPast() || (this.scroll.isBrowser && window.scrollY > window.innerHeight * 0.85)) ||
+    this.menuOpen();
 
   private offScroll: (() => void) | null = null;
   private observer: IntersectionObserver | null = null;

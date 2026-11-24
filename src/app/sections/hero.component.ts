@@ -12,7 +12,7 @@ const frameUrl = (i: number) => `/assets/scroll/flow/f_${String(i).padStart(3, '
   standalone: true,
   template: `
     <section id="hero" class="relative w-full bg-ink text-white" aria-label="STAG, real fruit, velvet effervescence">
-      <div #stage class="relative h-svh min-h-[560px] w-full overflow-hidden bg-ink">
+      <div #stage class="relative h-svh min-h-[500px] sm:min-h-[560px] w-full overflow-hidden bg-ink">
         <!-- Instant first paint: real <img> in the HTML, the canvas takes over once frames stream in -->
         <picture>
           <img
@@ -29,45 +29,45 @@ const frameUrl = (i: number) => `/assets/scroll/flow/f_${String(i).padStart(3, '
         <canvas #canvas class="absolute inset-0 h-full w-full" aria-hidden="true"></canvas>
 
         <!-- Legibility gradients -->
-        <div class="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-ink/80 to-transparent"></div>
-        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-ink via-ink/70 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-ink/80 to-transparent sm:h-32"></div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-4/5 bg-gradient-to-t from-ink via-ink/80 to-transparent sm:h-3/5"></div>
         <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-ink/60 via-ink/10 to-transparent max-md:hidden"></div>
 
-        <div class="container-x relative z-10 flex h-full flex-col pb-7 pt-24 sm:pb-9 sm:pt-28">
+        <div class="container-x relative z-10 flex h-full flex-col pb-6 pt-20 sm:pb-9 sm:pt-28">
           <!-- Top meta -->
           <div class="flex items-center justify-between">
-            <span class="eyebrow">Edition 01 &mdash; Cold Craft</span>
+            <span class="eyebrow text-[11px] sm:text-xs">Edition 01 &mdash; Cold Craft</span>
             <span class="eyebrow hidden !text-neutral-500 sm:inline">Natural Fruit Extracts &bull; Alpine Spring</span>
           </div>
 
           <!-- Text phases share one grid cell, so they overlap cleanly instead of stacking -->
-          <div class="mt-auto grid pb-8 sm:pb-12">
+          <div class="mt-auto grid pb-6 sm:pb-12">
             <div #phase1 class="col-start-1 row-start-1 will-change-transform">
-              <span class="eyebrow mb-3 block">Craft Refreshment</span>
-              <h1 class="text-[2.5rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+              <span class="eyebrow mb-2 block sm:mb-3">Craft Refreshment</span>
+              <h1 class="text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
                 Real fruit.<br />
                 <span class="font-normal text-neutral-400">Velvet effervescence.</span>
               </h1>
-              <p class="mt-4 max-w-md text-sm leading-relaxed text-neutral-300 sm:text-base">
+              <p class="mt-3 max-w-md text-xs leading-relaxed text-neutral-300 sm:mt-4 sm:text-base">
                 Organic botanical extracts paired with pure mountain water. Micro-carbonated for an effortless, crisp finish.
               </p>
             </div>
 
             <div #phase2 class="invisible col-start-1 row-start-1 will-change-transform">
-              <span class="eyebrow mb-3 block">Micro-Effervescence</span>
-              <h2 class="text-[2.5rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+              <span class="eyebrow mb-2 block sm:mb-3">Micro-Effervescence</span>
+              <h2 class="text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">
                 Draught smooth.<br />
                 <span class="font-normal text-neutral-400">In every pour.</span>
               </h2>
-              <p class="mt-4 max-w-md text-sm leading-relaxed text-neutral-300 sm:text-base">
+              <p class="mt-3 max-w-md text-xs leading-relaxed text-neutral-300 sm:mt-4 sm:text-base">
                 Gentle carbonation unlocks genuine fruit aroma and delicate natural sweetness without lingering heaviness.
               </p>
             </div>
 
             <div #phase3 class="invisible col-start-1 row-start-1 will-change-transform">
-              <span class="eyebrow mb-3 block">Ready to Enjoy</span>
-              <h2 class="text-[2.5rem] font-semibold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">Taste the craft.</h2>
-              <div class="mt-7 flex flex-wrap items-center gap-3">
+              <span class="eyebrow mb-2 block sm:mb-3">Ready to Enjoy</span>
+              <h2 class="text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-6xl lg:text-7xl">Taste the craft.</h2>
+              <div class="mt-5 flex flex-wrap items-center gap-3 sm:mt-7">
                 <button type="button" (click)="go('#collection')" class="btn-primary">Explore Collection</button>
                 <button type="button" (click)="go('#philosophy')" class="btn-ghost">Philosophy</button>
               </div>
@@ -77,10 +77,10 @@ const frameUrl = (i: number) => `/assets/scroll/flow/f_${String(i).padStart(3, '
           <!-- Bottom: scroll cue + progress -->
           <div class="flex items-center justify-between gap-6">
             <div #cue class="flex items-center gap-2.5 text-neutral-400">
-              <span class="flex h-7 w-4 items-start justify-center rounded-full border border-neutral-600 p-1" aria-hidden="true">
+              <span class="flex h-6 w-3.5 items-start justify-center rounded-full border border-neutral-600 p-0.5 sm:h-7 sm:w-4 sm:p-1" aria-hidden="true">
                 <span class="h-1.5 w-1 animate-pulse rounded-full bg-neutral-300"></span>
               </span>
-              <span class="eyebrow !text-neutral-400">
+              <span class="eyebrow text-[11px] !text-neutral-400 sm:text-xs">
                 @if (loadPct() < 100) { Loading {{ loadPct() }}% } @else { Scroll to pour }
               </span>
             </div>
@@ -232,7 +232,7 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
 
     const iw = img.naturalWidth || 1920;
     const ih = img.naturalHeight || 1080;
-    const scale = this.cw / this.ch >= iw / ih ? this.cw / iw : (this.cw < 700 ? this.cw / iw : this.ch / ih);
+    const scale = Math.max(this.cw / iw, this.ch / ih);
     const dw = iw * scale;
     const dh = ih * scale;
 
@@ -268,7 +268,15 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
         pin: true,
         anticipatePin: 1,
         scrub: this.scroll.lenis ? true : 0.2,
-        invalidateOnRefresh: true
+        invalidateOnRefresh: true,
+        onUpdate: self => {
+          const past = self.progress >= 0.99;
+          if (past !== this.scroll.heroPast()) {
+            this.zone.run(() => this.scroll.heroPast.set(past));
+          }
+        },
+        onLeave: () => this.zone.run(() => this.scroll.heroPast.set(true)),
+        onEnterBack: () => this.zone.run(() => this.scroll.heroPast.set(false))
       }
     });
 
@@ -301,6 +309,7 @@ export class HeroComponent implements AfterViewInit, OnDestroy {
     gsap.set(this.cue.nativeElement, { autoAlpha: 0 });
     this.target = FRAME_COUNT - 1;
     this.current = FRAME_COUNT - 1;
+    this.scroll.heroPast.set(true);
   }
 
   go(target: string): void {

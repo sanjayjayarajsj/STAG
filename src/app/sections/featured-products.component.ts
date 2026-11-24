@@ -5,7 +5,7 @@ import { CartService } from '../services/cart.service';
 import { ScrollService } from '../services/scroll.service';
 import { RevealDirective } from '../shared/reveal.directive';
 
-const ROTATION_INTERVAL_MS = 1000;
+const ROTATION_INTERVAL_MS = 1500;
 
 @Component({
   selector: 'app-featured-products',
@@ -39,7 +39,7 @@ const ROTATION_INTERVAL_MS = 1000;
               <span class="eyebrow">The Collection</span>
               <span class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium tracking-wider uppercase text-neutral-300">
                 <span class="h-1.5 w-1.5 rounded-full animate-ping" [style.background]="activeProduct().accent"></span>
-                Auto-Rotating · 1s
+                Auto-Rotating · 1.5s
               </span>
             </div>
             <h2 class="h-section">

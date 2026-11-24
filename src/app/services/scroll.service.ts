@@ -1,4 +1,4 @@
-import { Injectable, NgZone, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -23,6 +23,7 @@ export class ScrollService implements OnDestroy {
   readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   lenis: Lenis | null = null;
+  readonly heroPast = signal(false);
 
   private triggers: ScrollTrigger[] = [];
   private lockCount = 0;
