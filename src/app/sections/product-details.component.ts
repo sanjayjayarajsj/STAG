@@ -237,10 +237,6 @@ const AUTOPLAY_MS = 7000;
                 <!-- Content: each block reveals in sequence -->
                 <div class="flex flex-col gap-5 lg:col-span-6">
                   <div class="flex items-center gap-3 transition-[transform,opacity] duration-700 ease-out" [class]="rise(i)" [style.transition-delay.ms]="delay(i, 0)">
-                    <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3.5 py-1 text-xs font-medium uppercase tracking-widest text-neutral-200">
-                      <span class="h-1.5 w-1.5 rounded-full" [style.background]="item.glow"></span>
-                      Edition {{ item.number }} / 0{{ items().length }}
-                    </span>
                     <span class="eyebrow">{{ item.product.category }}</span>
                   </div>
 

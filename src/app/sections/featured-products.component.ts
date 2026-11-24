@@ -37,10 +37,6 @@ const ROTATION_INTERVAL_MS = 1500;
           <div>
             <div class="mb-3 flex items-center gap-3">
               <span class="eyebrow">The Collection</span>
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-[10px] font-medium tracking-wider uppercase text-neutral-300">
-                <span class="h-1.5 w-1.5 rounded-full animate-ping" [style.background]="activeProduct().accent"></span>
-                Auto-Rotating · 1.5s
-              </span>
             </div>
             <h2 class="h-section">
               Five flavours.<br />
@@ -64,10 +60,6 @@ const ROTATION_INTERVAL_MS = 1500;
                 class="group relative flex items-center gap-2 rounded-full px-4 py-2 text-xs font-medium tracking-wider uppercase transition-all duration-300"
                 [class]="active() === i ? 'bg-white text-ink shadow-lg shadow-white/10' : 'text-neutral-400 hover:text-white'"
               >
-                <span
-                  class="h-2 w-2 rounded-full transition-transform duration-300 group-hover:scale-125"
-                  [style.background]="p.accent"
-                ></span>
                 <span>{{ p.flavor }}</span>
                 @if (active() === i) {
                   <span class="text-[10px] opacity-60">0{{ i + 1 }}</span>
@@ -117,13 +109,8 @@ const ROTATION_INTERVAL_MS = 1500;
                     class="absolute inset-0 h-full w-full object-cover transition-transform duration-[800ms] ease-out group-hover:scale-105"
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/30 md:bg-gradient-to-r md:from-black/10 md:to-black/55"></div>
-                  
-                  <span class="absolute left-4 top-4 text-xs font-semibold tabular-nums tracking-widest text-white/90">
-                    0{{ i + 1 }} / 05
-                  </span>
 
                   <span class="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/60 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
-                    <span class="h-2 w-2 rounded-full" [style.background]="p.accent"></span>
                     {{ p.ingredients[0].name || p.flavor }}
                   </span>
                 </div>

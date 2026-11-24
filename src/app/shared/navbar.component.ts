@@ -66,7 +66,7 @@ interface NavLink {
             </svg>
             <span>Bag</span>
             @if (cart.totalItemsCount() > 0) {
-              <span class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-white px-1 text-[10px] font-semibold text-ink">
+              <span class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full border border-white/20 bg-black px-1 text-[10px] font-semibold text-white">
                 {{ cart.totalItemsCount() }}
               </span>
             }
