@@ -49,9 +49,9 @@ import { NewsletterComponent } from '../sections/newsletter.component';
       <main id="main" class="w-full overflow-x-clip">
         <app-hero></app-hero>
         <app-featured-products></app-featured-products>
+        <app-product-details></app-product-details>
         <app-brand-story></app-brand-story>
         <app-benefits></app-benefits>
-        <app-product-details></app-product-details>
         <app-showcase></app-showcase>
         <app-testimonials></app-testimonials>
         <app-faq></app-faq>

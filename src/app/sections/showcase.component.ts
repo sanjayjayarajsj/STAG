@@ -136,7 +136,7 @@ export class ShowcaseComponent {
   readonly products = inject(ProductService).products;
 
   readonly steps = [1, 2, 3, 4, 5];
-  readonly activeId = signal(this.products()[0].id);
+  readonly activeId = signal('stag-lime');
   readonly packIndex = signal(0);
   readonly active = computed<Product>(() => this.products().find(p => p.id === this.activeId()) ?? this.products()[0]);
 
